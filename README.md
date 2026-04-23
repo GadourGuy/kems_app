@@ -1,17 +1,26 @@
-# kems_app
+# KDSE Event Management System (KEMS)
 
-A new Flutter project.
+A Flutter mobile and web application designed to streamline event proposals, integrated calendar tracking, and automated volunteering for KDSE residents.
 
-## Getting Started
+## 🚀 Features
+* **Role-Based Access:** Distinct workflows for Students, Club Leads, and Admins.
+* **Event Workflows:** Digital proposal submissions with PDF support and administrative approval queues.
+* **Engagement:** Integrated event calendar and one-click volunteering.
+* **Post-Event:** 14-day automated reporting and certificate generation.
 
-This project is a starting point for a Flutter application.
+## 🛠 Tech Stack
+* **Framework:** Flutter
+* **Backend as a Service:** Firebase (Authentication, Firestore, Storage)
+* **State Management:** [Insert your choice, e.g., Riverpod / BLoC]
+* **Project Management:** Jira & GitHub Projects
 
-A few resources to get you started if this is your first Flutter project:
+## ⚙️ Getting Started
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Prerequisites
+* Flutter SDK (`flutter doctor` should show no errors)
+* Firebase CLI installed and configured
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/your-org/kems_app.git](https://github.com/your-org/kems_app.git)
