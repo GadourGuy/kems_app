@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183099438316",
+    "project_id": "kems-app-820d3",
+    "storage_bucket": "kems-app-820d3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183099438316:android:0bb7e69ecf8537c98d61c9",
+        "android_client_info": {
+          "package_name": "com.kdse.kems_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXo9OnYbNArlqbEw-mplx4E3iFZPfqwHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
