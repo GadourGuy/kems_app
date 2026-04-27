@@ -4,6 +4,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/loading_widget.dart';
+import 'package:provider/provider.dart';
+import '../../../core/services/auth_service.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -13,8 +15,6 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  int _selectedIndex = 0;
-  
   final List<Widget> _tabs = [
     const UsersManagementTab(),
     const RolesManagementTab(),
@@ -22,38 +22,63 @@ class _AdminDashboardState extends State<AdminDashboard> {
   ];
   
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Dashboard'),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: Container(
-            color: AppColors.surface,
-            child: TabBar(
-              tabs: const [
-                Tab(text: 'Users', icon: Icon(Icons.people)),
-                Tab(text: 'Roles', icon: Icon(Icons.admin_panel_settings)),
-                Tab(text: 'Stats', icon: Icon(Icons.analytics)),
-              ],
-              onTap: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
+    return DefaultTabController(
+      length: _tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Admin Dashboard'),
+          elevation: 0,
+          
+          // --- THE LOGOUT BUTTON FIX ---
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Sign Out',
+              onPressed: () async {
+                try {
+                  await Provider.of<AuthService>(context, listen: false).signOut();
+                  // AuthGate handles the navigation automatically!
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error signing out: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
               },
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.primary,
+            ),
+          ],
+          // -----------------------------
+          
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Container(
+              color: AppColors.surface,
+              child: const TabBar(
+                tabs: [
+                  Tab(text: 'Users', icon: Icon(Icons.people)),
+                  Tab(text: 'Roles', icon: Icon(Icons.admin_panel_settings)),
+                  Tab(text: 'Stats', icon: Icon(Icons.analytics)),
+                ],
+                labelColor: AppColors.primary,
+                unselectedLabelColor: AppColors.textSecondary,
+                indicatorColor: AppColors.primary,
+              ),
             ),
           ),
         ),
+        body: TabBarView(
+          children: _tabs,
+        ),
       ),
-      body: _tabs[_selectedIndex],
     );
   }
 }
-
 class UsersManagementTab extends StatelessWidget {
   const UsersManagementTab({super.key});
   
@@ -81,13 +106,19 @@ class UsersManagementTab extends StatelessWidget {
             final user = users[index];
             final userData = user.data() as Map<String, dynamic>;
             
+            final String name = userData['name'] ?? 'Unknown User';
+            final String email = userData['email'] ?? 'No email provided';
+            final String role = userData['role'] ?? AppConstants.roleVolunteer;
+            
+            final String initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+            
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: AppColors.primary.withOpacity(0.1),
                   child: Text(
-                    userData['name'][0].toUpperCase(),
+                    initial,
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -95,13 +126,13 @@ class UsersManagementTab extends StatelessWidget {
                   ),
                 ),
                 title: Text(
-                  userData['name'],
+                  name,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(userData['email']),
+                    Text(email),
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -109,14 +140,14 @@ class UsersManagementTab extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _getRoleColor(userData['role']).withOpacity(0.1),
+                        color: _getRoleColor(role).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        userData['role'].toUpperCase(),
+                        role.toUpperCase(),
                         style: TextStyle(
                           fontSize: 11,
-                          color: _getRoleColor(userData['role']),
+                          color: _getRoleColor(role),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -127,7 +158,7 @@ class UsersManagementTab extends StatelessWidget {
                   icon: const Icon(Icons.more_vert),
                   onSelected: (value) {
                     if (value == 'change_role') {
-                      _showChangeRoleDialog(context, user.id, userData['role']);
+                      _showChangeRoleDialog(context, user.id, role);
                     }
                   },
                   itemBuilder: (context) => [
@@ -390,7 +421,6 @@ class SystemStatsTab extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Stats Cards
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -427,7 +457,6 @@ class SystemStatsTab extends StatelessWidget {
               
               const SizedBox(height: 24),
               
-              // Role Distribution
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
